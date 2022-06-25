@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
-    private long id;
-    private long createdAt;
-    private String adjective;
-    private String category;
-    private String modifier;
-    private String name;
-    private double price;
+  private long id;
+  private long createdAt;
+  private String adjective;
+  private String category;
+  private String modifier;
+  private String name;
+  private double price;
 }

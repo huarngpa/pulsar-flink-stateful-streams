@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private long id;
-    private String firstName;
-    private String lastName;
-    private String emailAddress;
-    private long createdAt;
-    private long deletedAt;
-    private long mergedAt;
-    private long parentUserId;
+  private long id;
+  private String firstName;
+  private String lastName;
+  private String emailAddress;
+  private long createdAt;
+  private long deletedAt;
+  private long mergedAt;
+  private long parentUserId;
 }

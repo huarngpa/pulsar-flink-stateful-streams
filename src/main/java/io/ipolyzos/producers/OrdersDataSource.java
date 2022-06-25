@@ -16,43 +16,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OrdersDataSource {
-    private static final Logger logger
-            = LoggerFactory.getLogger(OrdersDataSource.class);
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Stream<Order> sourceStream = DataSourceUtils.loadDataFile(AppConfig.ORDERS_FILE_PATH)
-                .map(DataSourceUtils::lineAsOrder);
+  private static final Logger logger = LoggerFactory.getLogger(OrdersDataSource.class);
 
-        logger.info("Creating Pulsar Client ...");
-        PulsarClient pulsarClient = ClientUtils.initPulsarClient(AppConfig.token);
+  public static void main(String[] args) throws IOException, InterruptedException {
+    Stream<Order> sourceStream =
+        DataSourceUtils.loadDataFile(AppConfig.ORDERS_FILE_PATH).map(DataSourceUtils::lineAsOrder);
 
-        logger.info("Creating Orders Producer ...");
-        Producer<Order> ordersProducer
-                = pulsarClient.newProducer(JSONSchema.of(Order.class))
-                .producerName("order-producers")
-                .topic(AppConfig.ORDERS_TOPIC)
-                .create();
+    logger.info("Creating Pulsar Client ...");
+    PulsarClient pulsarClient = ClientUtils.initPulsarClient(AppConfig.token);
 
-        AtomicInteger counter = new AtomicInteger(1);
-        for (Iterator<Order> it = sourceStream.iterator(); it.hasNext(); ) {
-            Order order = it.next();
+    logger.info("Creating Orders Producer ...");
+    Producer<Order> ordersProducer =
+        pulsarClient
+            .newProducer(JSONSchema.of(Order.class))
+            .producerName("order-producers")
+            .topic(AppConfig.ORDERS_TOPIC)
+            .create();
 
-            ordersProducer.newMessage()
-                    .value(order)
-                    .eventTime(System.currentTimeMillis())
-                    .send();
+    AtomicInteger counter = new AtomicInteger(1);
+    for (Iterator<Order> it = sourceStream.iterator(); it.hasNext(); ) {
+      Order order = it.next();
 
-            logger.info("✅ Total {} - Sent: {}", counter.getAndIncrement(), order);
-        }
+      ordersProducer.newMessage().value(order).eventTime(System.currentTimeMillis()).send();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Sent '{}' orders.", counter.get());
-            logger.info("Closing Resources...");
-            try {
-                ordersProducer.close();
-                pulsarClient.close();
-            } catch (PulsarClientException e) {
-                e.printStackTrace();
-            }
-        }));
+      logger.info("✅ Total {} - Sent: {}", counter.getAndIncrement(), order);
     }
+
+    Runtime.getRuntime()
+        .addShutdownHook(
+            new Thread(
+                () -> {
+                  logger.info("Sent '{}' orders.", counter.get());
+                  logger.info("Closing Resources...");
+                  try {
+                    ordersProducer.close();
+                    pulsarClient.close();
+                  } catch (PulsarClientException e) {
+                    e.printStackTrace();
+                  }
+                }));
+  }
 }

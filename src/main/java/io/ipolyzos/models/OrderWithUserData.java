@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderWithUserData {
-    private long invoiceId;
-    private long lineItemId;
-    private User user;
-    private long itemId;
-    private String itemName;
-    private String itemCategory;
-    private double price;
-    private long createdAt;
-    private long paidAt;
+  private long invoiceId;
+  private long lineItemId;
+  private User user;
+  private long itemId;
+  private String itemName;
+  private String itemCategory;
+  private double price;
+  private long createdAt;
+  private long paidAt;
 }
